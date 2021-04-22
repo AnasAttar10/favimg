@@ -1,45 +1,61 @@
 
 /* Http Request  */ 
 
+window.onload = http("https://jsonplaceholder.typicode.com/photos");
+
+var overlay_parent = document.getElementById('overlay_parent');
+
+
 var parent_counter = document.getElementById('images');
 
 let arraystrorage = [] ; /// to put the favourate images in local storage 
 
- if(localStorage.getItem('fav_img')=== null){
-     console.log('yes');
-    arraystrorage=[];
- }
- else{
-    arraystrorage=JSON.parse(localStorage.getItem("fav_img"));
- }
- console.log(arraystrorage);
+    if(localStorage.getItem('fav_img')=== null){
+        arraystrorage=[];
+    }
+    else{
+        arraystrorage=JSON.parse(localStorage.getItem("fav_img"));
+    }
+ 
 
 
 
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
+   function http (api){
+    var xhttp = new XMLHttpRequest();
+     xhttp.onload = async function() {
     if (this.readyState == 4 && this.status == 200) {
       var myArr = JSON.parse(xhttp.responseText);
-      myFunction(myArr);
+        await addUrl(myArr);
+        await createElements(newArray);
+        await The_All_is_Ready();
     }
-};
-xhttp.open("GET", "https://jsonplaceholder.typicode.com/photos", true);
-xhttp.send();
+    };
+    xhttp.open("GET",api, true);
+    xhttp.send();
 
-// https://picsum.photos/v2/list 
-// https://jsonplaceholder.typicode.com/photos
- 
-let newArray = [] ; // to add the urls from api // 
+}
 
-let myFunction = (arr) =>{
+// "https://jsonplaceholder.typicode.com/photos"
+
+
+
+var newArray = [] ; // to add the urls from api // 
+
+let addUrl = (arr) =>{
+
    for (let i = 0; i < arr.length; i++) {
     let myurl = arr[i].url;
     newArray.push(myurl) ;
    }
-
+   console.log(arr);
+   console.log('add the api is ready ');
 }
 
+
 function createElements (myarr ) {
+
+    overlay_parent.style.display ='none';
+
     for (let ii = 0; ii < myarr.length; ii++) {
      div = document.createElement('div');
     div.setAttribute('class' ,'image' );
@@ -62,9 +78,7 @@ function createElements (myarr ) {
 }
 
 
-setTimeout(() => {
-
-    createElements(newArray);
+    function The_All_is_Ready(){
 
     let i = document.querySelectorAll('.image i') ; 
 
@@ -74,7 +88,7 @@ setTimeout(() => {
 
     let icons =document.querySelector('.icons').children;
 
-ArrFavImg.forEach(item =>{
+    ArrFavImg.forEach(item =>{
     item.onclick=function(){
        item.classList.toggle('fa-active');
 
@@ -82,7 +96,6 @@ ArrFavImg.forEach(item =>{
        {
         arraystrorage.push(item.nextSibling.getAttribute('src'));
         localStorage.setItem('fav_img', JSON.stringify(arraystrorage));
-       // console.log(arraystrorage);
        }
        else{
         let index_img = arraystrorage.indexOf(item.nextSibling.getAttribute('src')) ;
@@ -98,7 +111,7 @@ ArrFavImg.forEach(item =>{
 
 icons[0].onclick=function(){
     this.classList.add('fa-active');
-    icons[2].classList.remove('fa-active');
+    icons[2].classList.remove('fa-active');  
     ArrFavImg.forEach((item , i )=>{
         if(!(item.classList.contains('fa-active')))
           item.parentElement.style.display='block'; 
@@ -124,7 +137,6 @@ divimages.forEach(item=>{
     item.onclick=function(){
         showimages.children[0].children[1].innerHTML=""; 
         image_src = item.getAttribute('src');
-       // console.log(image_src);
         showimages.children[1].setAttribute('src' , image_src);
         The_Text = document.createTextNode( "|| Image No : " + item.getAttribute('alt')+"||")
         showimages.children[0].children[1].appendChild(The_Text);
@@ -132,11 +144,10 @@ divimages.forEach(item=>{
         overlay.style.display='block';
     }
 })
-
-close.onclick = function(){
-    overlay.style.display='none';  
-}
-
-}, 1000);
+    // to close the image when you open it 
+    close.onclick = function(){ 
+        overlay.style.display='none';  
+    }
+    }
 
 
